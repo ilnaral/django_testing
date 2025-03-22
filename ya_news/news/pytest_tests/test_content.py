@@ -65,6 +65,8 @@ def test_comments_order(client):
     """
     news = News.objects.create(title='Тестовая новость', text='Просто текст.')
     detail_url = reverse('news:detail', args=(news.id,))
+    response = client.get(detail_url)
+    assert response.status_code == 200
     author = User.objects.create(username='Комментатор')
     now = timezone.now()
     for index in range(10):
@@ -73,7 +75,6 @@ def test_comments_order(client):
         )
         comment.created = now + timedelta(days=index)
         comment.save()
-    response = client.get(detail_url)
     all_comments = news.comment_set.all()
     all_timestamps = [comment.created for comment in all_comments]
     sorted_timestamps = sorted(all_timestamps)
