@@ -54,7 +54,7 @@ def test_author_can_delete_comment(author_client,
     assert comments_count == expected_comment_count
 
 
-def test_user_cant_delete_comment_of_another_user(admin_client, 
+def test_user_cant_delete_comment_of_another_user(admin_client,
                                                   comment_delete_url
                                                   ):
     """Авторизованный пользователь не может удалять чужие комментарии."""
@@ -65,7 +65,7 @@ def test_user_cant_delete_comment_of_another_user(admin_client,
     assert comments_count == expected_comment_count
 
 
-def test_author_can_edit_comment(author_client, news_detail_url, 
+def test_author_can_edit_comment(author_client, news_detail_url,
                                  comment_edit_url, comment):
     """Авторизованный пользователь может редактировать свои комментарии."""
     response = author_client.post(comment_edit_url, data=NEW_TEXT_COMMENT)
