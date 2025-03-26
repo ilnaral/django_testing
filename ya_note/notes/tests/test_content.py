@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+
 from notes.forms import NoteForm
 
 from .common import URLS, BaseTestCase
@@ -16,7 +17,7 @@ class TestRoutes(BaseTestCase):
         """
         users_statuses = (
             (self.author_client, True),
-            (self.auth_user_client, False),
+            (self.not_author_client, False),
         )
         for user, note_in_list in users_statuses:
             with self.subTest():
