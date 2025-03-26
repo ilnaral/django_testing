@@ -1,13 +1,17 @@
 from http import HTTPStatus
-from pytest_django.asserts import assertRedirects
+
+from django.test import TestCase
 
 HTTP_OK = HTTPStatus.OK
 HTTP_NOT_FOUND = HTTPStatus.NOT_FOUND
 
 
-def get_login_redirect_url(url, login_url):
-    return f'{login_url}?next={url}'
+def assert_redirects_to_comments(response, news_detail_url):
+    """Проверка редиректа на страницу с комментариями."""
+    expected_url = f"{news_detail_url}#comments"
+    TestCase().assertRedirects(response, expected_url)
 
 
-def assert_redirects(response, expected_url):
-    assertRedirects(response, expected_url)
+def assert_not_found(response):
+    """Проверка статуса HTTP_NOT_FOUND."""
+    TestCase().assertEqual(response.status_code, HTTP_NOT_FOUND)
