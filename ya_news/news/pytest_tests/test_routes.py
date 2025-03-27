@@ -1,27 +1,47 @@
-from .constants import HTTP_OK
+from http import HTTPStatus
+
+import pytest
+from pytest_django.asserts import assertRedirects
+
+LOGIN_URL = pytest.lazy_fixture('login_url') # type: ignore
+LOGOUT_URL = pytest.lazy_fixture('logout_url') # type: ignore
+SIGNUP_URL = pytest.lazy_fixture('signup_url') # type: ignore
+DETAIL_URL = pytest.lazy_fixture('news_detail_url') # type: ignore
+EDIT_URL = pytest.lazy_fixture('comment_edit_url') # type: ignore
+DELETE_URL = pytest.lazy_fixture('comment_delete_url') # type: ignore
+HOME_URL = pytest.lazy_fixture('news_home_url') # type: ignore
 
 
-def test_pages_status(client, news_home_url, news_detail_url, login_url,
-                      logout_url, signup_url):
-    """Вроде не должны 302 проверять. Не совсем понимаю зачем она тут."""
-    urls = (
-        news_home_url,
-        news_detail_url,
-        login_url,
-        logout_url,
-        signup_url,
-    )
-    for url in urls:
-        response = client.get(url)
-        assert response.status_code == HTTP_OK
+NOT_AUTHOR_CLIENT = pytest.lazy_fixture('not_author_client') # type: ignore
+ANON_CLIENT = pytest.lazy_fixture('client') # type: ignore
+AUTHOR_CLIENT = pytest.lazy_fixture('author_client') # type: ignore
+
+EDIT_DELETE_URLS = (DELETE_URL, EDIT_URL)
+ANON_URLS = (DETAIL_URL, HOME_URL, LOGIN_URL, LOGOUT_URL, SIGNUP_URL)
+
+TEST_STATUS_CODES_DATA = [
+    (NOT_AUTHOR_CLIENT, url, HTTPStatus.NOT_FOUND)
+    for url in EDIT_DELETE_URLS
+] + [
+    (ANON_CLIENT, url, HTTPStatus.OK)
+    for url in ANON_URLS
+] + [
+    (AUTHOR_CLIENT, url, HTTPStatus.OK)
+    for url in EDIT_DELETE_URLS
+]
 
 
-def get_login_redirect_url(url, login_url):
-    return f'{login_url}?next={url}'
+@pytest.mark.parametrize(
+    'test_client, url, expected_status',
+    TEST_STATUS_CODES_DATA
+)
+def test_status_codes(test_client, url, expected_status):
+    response = test_client.get(url)
+    assert response.status_code == expected_status
 
 
-def test_redirects(client, comment_delete_url, comment_edit_url, login_url):
-    for url in (comment_delete_url, comment_edit_url):
-        redirect_url = get_login_redirect_url(url, login_url)
-        response = client.get(url)
-        assert response.url == redirect_url
+@pytest.mark.parametrize('url', EDIT_DELETE_URLS)
+def test_redirects(client, url, login_url):
+    expected_url = f'{login_url}?next={url}'
+    response = client.get(url)
+    assertRedirects(response, expected_url)

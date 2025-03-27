@@ -1,7 +1,6 @@
-from pytils.translit import slugify
-
 from notes.forms import WARNING
 from notes.models import Note
+from pytils.translit import slugify
 
 from .common import URLS, BaseTestCase
 

@@ -2,7 +2,6 @@ from http import HTTPStatus
 
 from django.test import TestCase
 
-HTTP_OK = HTTPStatus.OK
 HTTP_NOT_FOUND = HTTPStatus.NOT_FOUND
 
 

@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client
 from django.urls import reverse
 from django.utils import timezone
+
 from news.models import Comment, News
 
 User = get_user_model()
@@ -23,6 +24,13 @@ def author(django_user_model):
 def author_client(author, client):
     client = Client()
     client.force_login(author)
+    return client
+
+
+@pytest.fixture
+def not_author_client(django_user_model, client):
+    user = django_user_model.objects.create(username='Салфетка')
+    client.force_login(user)
     return client
 
 
